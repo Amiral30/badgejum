@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const cropModal = new bootstrap.Modal(document.getElementById('cropModal'));
     const imageToCrop = document.getElementById('imageToCrop');
     const cropButton = document.getElementById('cropButton');
-    let cropperInstance; 
+    let cropperInstance;
 
     const defaultBadgeImagePath = 'badge.jpg';
     const circleConfig = { 
@@ -45,7 +45,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (userImage) {
             ctx.save();
-
             ctx.beginPath();
             ctx.arc(circleConfig.x, circleConfig.y, circleConfig.radius, 0, Math.PI * 2, true);
             ctx.closePath();
@@ -66,7 +65,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const drawY = circleConfig.y - (drawHeight / 2);
 
             ctx.drawImage(userImage, drawX, drawY, drawWidth, drawHeight);
-
             ctx.restore();
 
             ctx.beginPath();
@@ -83,25 +81,41 @@ document.addEventListener('DOMContentLoaded', () => {
             const reader = new FileReader();
             reader.onload = (e) => {
                 imageToCrop.src = e.target.result;
-
-                if (cropperInstance) {
-                    cropperInstance.destroy();
-                }
-                cropperInstance = new Cropper(imageToCrop, {
-                    aspectRatio: 1,
-                    viewMode: 1,
-                    guides: true,
-                    autoCropArea: 0.8,
-                    cropBoxResizable: true,
-                    cropBoxMovable: true,
-                });
-
-                cropModal.show();
+                cropModal.show(); // Affiche la modale
             };
             reader.readAsDataURL(file);
         } else {
             userImage = null;
             drawBadge();
+        }
+    });
+
+    // NOUVEAU CODE : Initialiser Cropper.js seulement quand la modale est complètement visible
+    document.getElementById('cropModal').addEventListener('shown.bs.modal', () => {
+        if (cropperInstance) {
+            cropperInstance.destroy();
+        }
+        cropperInstance = new Cropper(imageToCrop, {
+            aspectRatio: 1,
+            viewMode: 1,
+            guides: true,
+            autoCropArea: 0.8,
+            cropBoxResizable: true,
+            cropBoxMovable: true,
+            ready: function () { // Callback quand Cropper.js est prêt
+                // Force le redimensionnement pour s'assurer que l'image prend toute la place
+                this.cropper.zoomTo(0.5); // Ajuste le zoom initial si nécessaire (0.5 = 50%)
+                this.cropper.zoomTo(1); // Zoom à 100% après un petit zoom initial
+                this.cropper.reset(); // Réinitialise pour adapter à la taille du conteneur
+            }
+        });
+    });
+
+    // NOUVEAU CODE : Détruire Cropper.js quand la modale est cachée
+    document.getElementById('cropModal').addEventListener('hidden.bs.modal', () => {
+        if (cropperInstance) {
+            cropperInstance.destroy();
+            cropperInstance = null; // Important pour éviter les références persistantes
         }
     });
 
@@ -120,18 +134,12 @@ document.addEventListener('DOMContentLoaded', () => {
             userImage.onload = () => {
                 drawBadge();
                 cropModal.hide();
-                if (cropperInstance) {
-                    cropperInstance.destroy();
-                }
             };
             userImage.onerror = () => {
                 alert("Erreur lors du traitement de l'image rognée.");
                 userImage = null;
                 drawBadge();
                 cropModal.hide();
-                if (cropperInstance) {
-                    cropperInstance.destroy();
-                }
             };
         }
     });
