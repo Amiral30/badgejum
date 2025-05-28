@@ -1,0 +1,68 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-image: url('feu.gif');
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-color: #0a0a0a;
+    padding-top: 80px; /* AUGMENTÉ : Était 50px, pour descendre le contenu de la page */
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 10px 0;
+    text-align: center;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+main {
+    flex-grow: 1;
+}
+
+canvas {
+    max-width: 100%;
+    height: auto; 
+    display: block;
+    margin: 0 auto; 
+}
+
+.card {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    padding: 30px;
+}
+
+@keyframes pulseGlow {
+    0% {
+        text-shadow: 0 0 5px rgba(255, 255, 255, 0.5), 0 0 10px rgba(255, 255, 255, 0.3);
+        /* RETIRÉ : transform: scale(1); */
+    }
+    50% {
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.5);
+        /* RETIRÉ : transform: scale(1.02); */
+    }
+    100% {
+        text-shadow: 0 0 5px rgba(255, 255, 255, 0.5), 0 0 10px rgba(255, 255, 255, 0.3);
+        /* RETIRÉ : transform: scale(1); */
+    }
+}
+
+header h1 {
+    color: white;
+    animation-name: pulseGlow; 
+    animation-duration: 2s; 
+    animation-iteration-count: infinite; 
+    animation-timing-function: ease-in-out;
+    animation-fill-mode: forwards; 
+}
+
+footer {
+    margin-top: auto;
+}
