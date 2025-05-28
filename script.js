@@ -4,6 +4,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const ctx = badgeCanvas.getContext('2d');
     const downloadButton = document.getElementById('downloadButton');
 
+    const canvasDrawingWidth = 1200;
+    const canvasDrawingHeight = 600;
+
+    badgeCanvas.width = canvasDrawingWidth;
+    badgeCanvas.height = canvasDrawingHeight;
+
     const cropModal = new bootstrap.Modal(document.getElementById('cropModal'));
     const imageToCrop = document.getElementById('imageToCrop');
     const cropButton = document.getElementById('cropButton');
@@ -11,9 +17,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const defaultBadgeImagePath = 'badge.jpg';
     const circleConfig = { 
-        x: 452,   
-        y: 166,
-        radius: 128
+        x: 452 * (canvasDrawingWidth / 600),
+        y: 166 * (canvasDrawingHeight / 300),
+        radius: 128 * (canvasDrawingWidth / 600)
     };
 
     let userImage = null; 
@@ -70,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.beginPath();
             ctx.arc(circleConfig.x, circleConfig.y, circleConfig.radius, 0, Math.PI * 2, true);
             ctx.strokeStyle = 'white';
-            ctx.lineWidth = 5;
+            ctx.lineWidth = 5 * (canvasDrawingWidth / 600);
             ctx.stroke();
         }
     }
@@ -119,8 +125,8 @@ document.addEventListener('DOMContentLoaded', () => {
     cropButton.addEventListener('click', () => {
         if (cropperInstance) {
             const croppedDataUrl = cropperInstance.getCroppedCanvas({
-                width: 400,
-                height: 400,
+                width: 800,
+                height: 800,
                 fillColor: '#fff',
                 imageSmoothingEnabled: true,
                 imageSmoothingQuality: 'high'
@@ -143,15 +149,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     downloadButton.addEventListener('click', () => {
         if (defaultBadgeImage.complete && defaultBadgeImage.naturalWidth > 0) {
-            const dataURL = badgeCanvas.toDataURL('image/png');
+            const dataURL = badgeCanvas.toDataURL('image/png'); 
             const a = document.createElement('a');
             a.href = dataURL;
             
-            // --- NOUVEAU CODE ICI ---
-            const timestamp = new Date().getTime(); // Obtient un timestamp unique
-            const randomString = Math.random().toString(36).substring(2, 8); // Génère une petite chaîne aléatoire
-            a.download = `mon_badge_${timestamp}_${randomString}.png`; // Nom du fichier avec timestamp et chaîne aléatoire
-            // --- FIN NOUVEAU CODE ---
+            const timestamp = new Date().getTime();
+            const randomString = Math.random().toString(36).substring(2, 8);
+            a.download = `mon_badge_${timestamp}_${randomString}.png`;
             
             document.body.appendChild(a);
             a.click();
