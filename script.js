@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const reader = new FileReader();
             reader.onload = (e) => {
                 imageToCrop.src = e.target.result;
-                cropModal.show(); // Affiche la modale
+                cropModal.show();
             };
             reader.readAsDataURL(file);
         } else {
@@ -90,7 +90,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // NOUVEAU CODE : Initialiser Cropper.js seulement quand la modale est complètement visible
     document.getElementById('cropModal').addEventListener('shown.bs.modal', () => {
         if (cropperInstance) {
             cropperInstance.destroy();
@@ -102,20 +101,18 @@ document.addEventListener('DOMContentLoaded', () => {
             autoCropArea: 0.8,
             cropBoxResizable: true,
             cropBoxMovable: true,
-            ready: function () { // Callback quand Cropper.js est prêt
-                // Force le redimensionnement pour s'assurer que l'image prend toute la place
-                this.cropper.zoomTo(0.5); // Ajuste le zoom initial si nécessaire (0.5 = 50%)
-                this.cropper.zoomTo(1); // Zoom à 100% après un petit zoom initial
-                this.cropper.reset(); // Réinitialise pour adapter à la taille du conteneur
+            ready: function () {
+                this.cropper.zoomTo(0.5);
+                this.cropper.zoomTo(1);
+                this.cropper.reset();
             }
         });
     });
 
-    // NOUVEAU CODE : Détruire Cropper.js quand la modale est cachée
     document.getElementById('cropModal').addEventListener('hidden.bs.modal', () => {
         if (cropperInstance) {
             cropperInstance.destroy();
-            cropperInstance = null; // Important pour éviter les références persistantes
+            cropperInstance = null;
         }
     });
 
@@ -149,7 +146,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const dataURL = badgeCanvas.toDataURL('image/png');
             const a = document.createElement('a');
             a.href = dataURL;
-            a.download = 'mon_badge_evenement.png';
+            
+            // --- NOUVEAU CODE ICI ---
+            const timestamp = new Date().getTime(); // Obtient un timestamp unique
+            const randomString = Math.random().toString(36).substring(2, 8); // Génère une petite chaîne aléatoire
+            a.download = `mon_badge_${timestamp}_${randomString}.png`; // Nom du fichier avec timestamp et chaîne aléatoire
+            // --- FIN NOUVEAU CODE ---
+            
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
